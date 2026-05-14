@@ -15,6 +15,33 @@ Built on OpenAI's [`gpt-oss-safeguard-20b`](https://huggingface.co/openai/gpt-os
 
 ![Safeguard showing a PASS verdict for a legitimate support request](screenshots/safeguard-pass.png)
 
+## Cursor Skill Starter Pack
+
+This repository now includes a project-scoped skill pack at `.cursor/skills/` to make recurring development workflows repeatable.
+
+Use a skill explicitly in Cursor chat with `/skill-name`:
+
+- `/proxy-cors-regression-check`
+- `/streaming-jsonline-debugger`
+- `/safeguard-verdict-split-validator`
+- `/ui-accessibility-smoke-check`
+- `/local-stack-smoke-test`
+- `/release-readiness-safeguard`
+- `/proxy-error-path-audit`
+- `/safeguard-policy-fixture-check`
+
+`PROJECT_PLAN.md` tracks current objectives and outstanding follow-up tasks for this skill-driven workflow.
+
+## App Store Launch Pack (iOS/iPadOS)
+
+A full public launch asset plan is now documented in `APP_STORE_LAUNCH_PACK.md`, including:
+
+- App icon production specs (`1024 x 1024`, PNG, no transparency)
+- iPhone/iPad screenshot requirements and narrative sequencing
+- App preview video technical requirements and storyboard
+- Accessibility and HIG guardrails for launch-ready marketing assets
+- A launch risk and validation section aligned with business/technical/skeptical review lenses
+
 ## What it does
 
 You give it two things:
