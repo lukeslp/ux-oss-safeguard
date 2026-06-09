@@ -1,3 +1,46 @@
+"""
+gpt-oss-safeguard/app.py — Gradio variant of the Safeguard evaluator.
+
+File Purpose
+------------
+Standalone Gradio UI that mirrors the web evaluator's two-pane
+Analysis / Verdict experience for OpenAI's `gpt-oss-safeguard-20b`.
+Originally forked from OpenAI's HuggingFace Space (see this directory's
+README for HF Spaces metadata).
+
+Backend
+-------
+This file targets the sibling Node proxy by default
+(`http://localhost:3456`, model `gpt-oss-safeguard-20b`), which
+translates the Ollama-shaped request to the HuggingFace Inference
+API — the same backend the web evaluator uses. Set `OLLAMA_URL` to
+`http://localhost:11434` (and `OLLAMA_MODEL` to a local model) to run
+against a raw local Ollama instead. This resolves the backend drift
+previously tracked in `../PROJECT_PLAN.md` under "Open Decisions".
+
+Primary Functions
+-----------------
+- `_to_messages(policy, user_prompt)` — assemble Ollama
+  chat-completion messages with the policy as the system message.
+- `generate_stream(policy, prompt, max_new_tokens, temperature,
+  top_p, repetition_penalty)` — POST to `{OLLAMA_URL}/api/chat`
+  with `stream=true` and yield `(analysis_text, final_text, meta)`
+  triples while accumulating tokens. Splits the stream on the
+  literal `assistantfinal` token.
+
+Inputs
+------
+Environment: `OLLAMA_URL`, `OLLAMA_MODEL`, `MAX_NEW_TOKENS`,
+`TEMPERATURE`, `TOP_P`, `REPETITION_PENALTY`. Browser: policy text,
+prompt text, and four sampling sliders.
+
+Outputs
+-------
+Three Gradio outputs: streamed Analysis, streamed Answer (everything
+after the `assistantfinal` token), and a metadata footer with model
+name, elapsed time, and `max_new_tokens`.
+"""
+
 import os
 import re
 import time
@@ -8,8 +51,8 @@ from typing import List, Dict, Tuple
 import gradio as gr
 
 # === Config (override via env vars) ===
-OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-MODEL_ID = os.environ.get("OLLAMA_MODEL", "glm-4.7-flash")
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:3456")
+MODEL_ID = os.environ.get("OLLAMA_MODEL", "gpt-oss-safeguard-20b")
 DEFAULT_MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", 512))
 DEFAULT_TEMPERATURE = float(os.environ.get("TEMPERATURE", 1))
 DEFAULT_TOP_P = float(os.environ.get("TOP_P", 1.0))
