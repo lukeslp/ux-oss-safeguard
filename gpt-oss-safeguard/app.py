@@ -10,12 +10,13 @@ README for HF Spaces metadata).
 
 Backend
 -------
-This file currently targets a **local Ollama** endpoint (default
-`http://localhost:11434`, model `glm-4.7-flash`) — it does NOT go
-through the sibling Node proxy, and it does NOT call HuggingFace.
-The sibling `../proxy-server.js` targets HuggingFace Inference API.
-This split is a known drift; resolution is tracked in
-`../PROJECT_PLAN.md` under "Open Decisions".
+This file targets the sibling Node proxy by default
+(`http://localhost:3456`, model `gpt-oss-safeguard-20b`), which
+translates the Ollama-shaped request to the HuggingFace Inference
+API — the same backend the web evaluator uses. Set `OLLAMA_URL` to
+`http://localhost:11434` (and `OLLAMA_MODEL` to a local model) to run
+against a raw local Ollama instead. This resolves the backend drift
+previously tracked in `../PROJECT_PLAN.md` under "Open Decisions".
 
 Primary Functions
 -----------------
@@ -50,8 +51,8 @@ from typing import List, Dict, Tuple
 import gradio as gr
 
 # === Config (override via env vars) ===
-OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:11434")
-MODEL_ID = os.environ.get("OLLAMA_MODEL", "glm-4.7-flash")
+OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://localhost:3456")
+MODEL_ID = os.environ.get("OLLAMA_MODEL", "gpt-oss-safeguard-20b")
 DEFAULT_MAX_NEW_TOKENS = int(os.environ.get("MAX_NEW_TOKENS", 512))
 DEFAULT_TEMPERATURE = float(os.environ.get("TEMPERATURE", 1))
 DEFAULT_TOP_P = float(os.environ.get("TOP_P", 1.0))
