@@ -1,3 +1,45 @@
+"""
+gpt-oss-safeguard/app.py — Gradio variant of the Safeguard evaluator.
+
+File Purpose
+------------
+Standalone Gradio UI that mirrors the web evaluator's two-pane
+Analysis / Verdict experience for OpenAI's `gpt-oss-safeguard-20b`.
+Originally forked from OpenAI's HuggingFace Space (see this directory's
+README for HF Spaces metadata).
+
+Backend
+-------
+This file currently targets a **local Ollama** endpoint (default
+`http://localhost:11434`, model `glm-4.7-flash`) — it does NOT go
+through the sibling Node proxy, and it does NOT call HuggingFace.
+The sibling `../proxy-server.js` targets HuggingFace Inference API.
+This split is a known drift; resolution is tracked in
+`../PROJECT_PLAN.md` under "Open Decisions".
+
+Primary Functions
+-----------------
+- `_to_messages(policy, user_prompt)` — assemble Ollama
+  chat-completion messages with the policy as the system message.
+- `generate_stream(policy, prompt, max_new_tokens, temperature,
+  top_p, repetition_penalty)` — POST to `{OLLAMA_URL}/api/chat`
+  with `stream=true` and yield `(analysis_text, final_text, meta)`
+  triples while accumulating tokens. Splits the stream on the
+  literal `assistantfinal` token.
+
+Inputs
+------
+Environment: `OLLAMA_URL`, `OLLAMA_MODEL`, `MAX_NEW_TOKENS`,
+`TEMPERATURE`, `TOP_P`, `REPETITION_PENALTY`. Browser: policy text,
+prompt text, and four sampling sliders.
+
+Outputs
+-------
+Three Gradio outputs: streamed Analysis, streamed Answer (everything
+after the `assistantfinal` token), and a metadata footer with model
+name, elapsed time, and `max_new_tokens`.
+"""
+
 import os
 import re
 import time
